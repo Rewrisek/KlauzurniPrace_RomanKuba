@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: #0A0A0A;
+}
+
+body {
+  background: #0A0A0A;
+  color: #F5F2ED;
+  overflow-x: hidden;
+}
+
+/* Hide default scrollbar but keep scroll functionality */
+::-webkit-scrollbar {
+  width: 2px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #4A5568;
+}
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: #4A5568;
+  text-transform: uppercase;
+}
+
+.display-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.body-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+/* Hairline rule - architectural drawing style */
+.arch-rule {
+  border: none;
+  border-top: 1px solid #1E1E1E;
+}
+
+.arch-rule-accent {
+  border: none;
+  border-top: 1px solid #C8BFB0;
+  opacity: 0.3;
+}
