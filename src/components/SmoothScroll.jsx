@@ -6,32 +6,46 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function SmoothScroll({ children }) {
-  const lenisRef = useRef(null);
+    const lenisRef = useRef(null);
 
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smooth: true,
-      smoothTouch: false,
-    });
+    useEffect(() => {
+        // Disable smooth scroll on touch devices — native momentum feels better
+        // and Lenis smooth scroll can fight with iOS Safari's inertia
+        const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
-    lenisRef.current = lenis;
+        const lenis = new Lenis({
+            duration: isTouchDevice ? 1.0 : 1.4,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            // smoothTouch: false keeps native momentum on mobile (correct)
+            smoothTouch: false,
+            // Prevent Lenis from swallowing touch events the canvas needs
+            eventsTarget: document.documentElement,
+        });
 
-    // Hook Lenis into GSAP's ticker so ScrollTrigger stays in sync
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-    gsap.ticker.lagSmoothing(0);
+        lenisRef.current = lenis;
 
-    // Update ScrollTrigger on every Lenis scroll
-    lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
 
-    return () => {
-      lenis.destroy();
-      gsap.ticker.remove((time) => lenis.raf(time * 1000));
-    };
-  }, []);
+        lenis.on('scroll', ScrollTrigger.update);
 
-  return <>{children}</>;
+        // Handle orientation change — ScrollTrigger needs a refresh
+        const onOrientationChange = () => {
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 300); // small delay for the browser to repaint after rotation
+        };
+        window.addEventListener('orientationchange', onOrientationChange);
+        // Also handle resize (desktop window resize, tablet split-screen)
+        window.addEventListener('resize', () => ScrollTrigger.refresh());
+
+        return () => {
+            lenis.destroy();
+            window.removeEventListener('orientationchange', onOrientationChange);
+        };
+    }, []);
+
+    return <>{children}</>;
 }

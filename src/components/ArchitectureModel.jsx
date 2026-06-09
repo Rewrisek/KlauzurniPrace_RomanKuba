@@ -56,25 +56,67 @@ function Building() {
 
 useGLTF.preload('/model.glb');
 
-const CAMERA_PATH = [
+// Desktop camera path — wide/landscape view
+const CAMERA_PATH_DESKTOP = [
     { pos: [12, 4, 10],  target: [0, 2, 0] },
     { pos: [8,  3,  -8], target: [0, 2, 0] },
     { pos: [-6, 6,  6],  target: [0, 1, 0] },
     { pos: [0,  12, 0],  target: [0, 0, 0] },
 ];
 
+// Mobile/tablet camera path — pulled back to show full model in portrait
+const CAMERA_PATH_MOBILE = [
+    { pos: [16, 6, 14],  target: [0, 2, 0] },
+    { pos: [12, 5, -10], target: [0, 2, 0] },
+    { pos: [-8, 8,  8],  target: [0, 1, 0] },
+    { pos: [0,  15, 0],  target: [0, 0, 0] },
+];
+
+// Tablet sits between the two
+const CAMERA_PATH_TABLET = [
+    { pos: [14, 5, 12],  target: [0, 2, 0] },
+    { pos: [10, 4,  -9], target: [0, 2, 0] },
+    { pos: [-7, 7,  7],  target: [0, 1, 0] },
+    { pos: [0,  13, 0],  target: [0, 0, 0] },
+];
+
+function getCameraPath() {
+    const w = window.innerWidth;
+    if (w < 768) return CAMERA_PATH_MOBILE;
+    if (w < 1024) return CAMERA_PATH_TABLET;
+    return CAMERA_PATH_DESKTOP;
+}
+
+function getFov() {
+    const w = window.innerWidth;
+    if (w < 768) return 55;   // wider fov to see more on narrow screen
+    if (w < 1024) return 50;
+    return 45;
+}
+
 export default function ArchitectureModel() {
     const groupRef = useRef();
     const { camera } = useThree();
     const progressRef = useRef(0);
+    const cameraPathRef = useRef(getCameraPath());
 
     useEffect(() => {
-        camera.position.set(...CAMERA_PATH[0].pos);
+        // Update camera path on resize
+        const onResize = () => {
+            cameraPathRef.current = getCameraPath();
+            camera.fov = getFov();
+            camera.updateProjectionMatrix();
+        };
+        window.addEventListener('resize', onResize);
+
+        camera.position.set(...cameraPathRef.current[0].pos);
         camera.lookAt(0, 2, 0);
-        camera.fov = 45;
+        camera.fov = getFov();
         camera.near = 0.01;
         camera.far = 1000;
         camera.updateProjectionMatrix();
+
+        return () => window.removeEventListener('resize', onResize);
     }, [camera]);
 
     useEffect(() => {
@@ -92,12 +134,13 @@ export default function ArchitectureModel() {
             t: 1,
             ease: 'none',
             onUpdate: () => {
+                const path = cameraPathRef.current;
                 const t = proxy.t;
-                const segments = CAMERA_PATH.length - 1;
+                const segments = path.length - 1;
                 const seg = Math.min(Math.floor(t * segments), segments - 1);
                 const segT = (t * segments) - seg;
-                const from = CAMERA_PATH[seg];
-                const to   = CAMERA_PATH[seg + 1];
+                const from = path[seg];
+                const to   = path[seg + 1];
                 camera.position.lerpVectors(
                     new THREE.Vector3(...from.pos),
                     new THREE.Vector3(...to.pos),

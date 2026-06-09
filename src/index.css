@@ -5,63 +5,95 @@
 @tailwind utilities;
 
 *, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html {
-  background: #0A0A0A;
+    background: #0A0A0A;
+    /* Prevent iOS elastic bounce showing white background */
+    overscroll-behavior: none;
+    /* Ensure consistent text sizing across orientations */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
-  background: #0A0A0A;
-  color: #F5F2ED;
-  overflow-x: hidden;
+    background: #0A0A0A;
+    color: #F5F2ED;
+    overflow-x: hidden;
+    /* Prevent pull-to-refresh on mobile Chrome */
+    overscroll-behavior-y: none;
 }
 
-/* Hide default scrollbar but keep scroll functionality */
+/* Scrollbar — 2px on desktop, hidden on mobile */
 ::-webkit-scrollbar {
-  width: 2px;
+    width: 2px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A0A0A;
+    background: #0A0A0A;
 }
 ::-webkit-scrollbar-thumb {
-  background: #4A5568;
+    background: #4A5568;
+}
+
+@media (max-width: 767px) {
+    ::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .section-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: #4A5568;
-  text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: #4A5568;
+    text-transform: uppercase;
 }
 
 .display-heading {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 300;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
 }
 
 .body-text {
-  font-family: 'Inter', sans-serif;
-  font-weight: 300;
-  line-height: 1.7;
-  letter-spacing: 0.01em;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
 }
 
-/* Hairline rule - architectural drawing style */
 .arch-rule {
-  border: none;
-  border-top: 1px solid #1E1E1E;
+    border: none;
+    border-top: 1px solid #1E1E1E;
 }
 
 .arch-rule-accent {
-  border: none;
-  border-top: 1px solid #C8BFB0;
-  opacity: 0.3;
+    border: none;
+    border-top: 1px solid #C8BFB0;
+    opacity: 0.3;
+}
+
+/* ── Mobile-specific overrides ─────────────────────────── */
+
+/* Prevent 300ms tap delay on touch devices */
+a, button {
+    touch-action: manipulation;
+}
+
+/* Ensure tap highlights are subtle */
+a, button {
+    -webkit-tap-highlight-color: rgba(200, 191, 176, 0.1);
+}
+
+/* Section label slightly smaller on mobile */
+@media (max-width: 767px) {
+    .section-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.15em;
+    }
 }
