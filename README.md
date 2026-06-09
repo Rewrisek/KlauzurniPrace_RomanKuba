@@ -1,0 +1,1 @@
+# KlauzurniPrace_RomanKuba
