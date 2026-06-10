@@ -44,7 +44,7 @@ function Building() {
         box.getSize(size);
         box.getCenter(center);
 
-        const scale = 3.5;
+        const scale = 4;
         scene.scale.setScalar(scale);
         scene.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
 
